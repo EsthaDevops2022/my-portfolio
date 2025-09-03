@@ -7,18 +7,18 @@ on:
     branches: [ "main" ]
 
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Build image
-      run: docker build -t esthadevops2022/my-portfolio .
+      - uses: actions/checkout@v4
 
-    - name: push image
-      run: |
-        docker login -u esthadevops2022 -p ${{ secrets.REGISTRY_PASSWORD }}
-        docker push esthadevops2022/my-portfolio
+      - name: Build Docker image
+        run: docker build -t esthadevops2022/my-portfolio .
+
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u esthadevops2022 --password-stdin
+
+      - name: Push Docker image
+        run: docker push esthadevops2022/my-portfolio
         
