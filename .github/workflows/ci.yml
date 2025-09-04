@@ -15,13 +15,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Build image
-        run: docker build -t EsthaDevops2022/my-portfolio .
+        run: docker build -t esthadevops2022/my-portfolio .
 
       - name: Push image
         run: |
-          echo ${{ secrets.REGISTRY_PASS }} | docker login -u esthadevops2022 --password-stdin
-          docker push esthadevops2022/my-portfolio
-
-          #docker login -u esthadevops2022 -p ${{ secrets.REGISTRY_PASS }} 
+          #echo ${{ secrets.REGISTRY_PASS }} | docker login -u esthadevops2022 --password-stdin
           #docker push esthadevops2022/my-portfolio
+
+          docker login -u esthadevops2022 -p ${{ secrets.REGISTRY_PASS }} 
+          docker push esthadevops2022/my-portfolio
            
