@@ -6,11 +6,7 @@ on:
   pull_request:
     branches: [ "main" ]
 
-env:
-  AWS_REGION: ${{ secrets.AWS_REGION }}
-  ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
-  IMAGE_TAG: latest    
- 
+
 jobs:
   
   build:
@@ -27,27 +23,7 @@ jobs:
             echo "${{ secrets.REGISTRY_PASS }}" | docker login -u "${{ secrets.REGISTRY_USER }}" --password-stdin
             docker push ${{ secrets.REGISTRY_USER }}/my-portfolio:${{ github.run_number }}
             docker push ${{ secrets.REGISTRY_USER }}/my-portfolio
-
-      - name: configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}  
-
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2  
-
-      - name: Tag Docker image
-        run: |
-            ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-            IMAGE_URI="${ACCOUNT_ID}.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:${{ github.run_number }}"
-            docker tag $ECR_REPOSITORY:${{ github.run_number }} $IMAGE_URI  
-            echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
-      - name: Push image to ECR
-        run: |
-            docker push $IMAGE_URI      
+ 
   deploy:
     needs: build
     runs-on: ubuntu-latest
