@@ -10,20 +10,32 @@ on:
 jobs:
   
   build:
-   
     runs-on: ubuntu-latest 
     steps:
       - uses: actions/checkout@v4
-      - name: Build image
-        run: | 
-              docker build -t ${{ secrets.REGISTRY_USER }}/my-portfolio:${{ github.run_number }} .
-              docker build -t ${{ secrets.REGISTRY_USER }}/my-portfolio .
-      - name: Push image 
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build, tag, and push image to Amazon ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: my-portfolio_app
+          IMAGE_TAG: ${{ github.run_number }}
         run: |
-            echo "${{ secrets.REGISTRY_PASS }}" | docker login -u "${{ secrets.REGISTRY_USER }}" --password-stdin
-            docker push ${{ secrets.REGISTRY_USER }}/my-portfolio:${{ github.run_number }}
-            docker push ${{ secrets.REGISTRY_USER }}/my-portfolio
- 
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest   
+
   deploy:
     needs: build
     runs-on: ubuntu-latest
@@ -35,7 +47,31 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
           script: |
-                  docker rm -f resume
-                  docker run -d --name resume -p 8080:5001 ${{ secrets.REGISTRY_USER }}/my-portfolio:${{ github.run_number }}
+                  docker rm -f resume || true
+                  docker run -d --name resume -p 8080:5001 ${{ secrets.ECR_REPOSITORY }}:${{ github.run_number }}
+
+#      - name: Build image
+#        run: | 
+#              docker build -t ${{ secrets.REGISTRY_USER }}/my-portfolio:${{ github.run_number }} .
+#              docker build -t ${{ secrets.REGISTRY_USER }}/my-portfolio .
+#      - name: Push image 
+#        run: |
+#            echo "${{ secrets.REGISTRY_PASS }}" | docker login -u "${{ secrets.REGISTRY_USER }}" --password-stdin
+#            docker push ${{ secrets.REGISTRY_USER }}/my-portfolio:${{ github.run_number }}
+#            docker push ${{ secrets.REGISTRY_USER }}/my-portfolio
+# 
+#  deploy:
+#    needs: build
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: SSH to Server
+#        uses: appleboy/ssh-action@v1
+#        with:
+#          host: ${{ secrets.HOST }}
+#          username: ${{ secrets.USERNAME }}
+#          key: ${{ secrets.KEY }}
+#          script: |
+#                  docker rm -f resume
+#                  docker run -d --name resume -p 8080:5001 ${{ secrets.REGISTRY_USER }}/my-portfolio:${{ github.run_number }}
   
         
