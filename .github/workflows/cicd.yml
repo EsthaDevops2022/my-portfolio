@@ -56,11 +56,10 @@ jobs:
               
             - name: build image, tag and push image to ECR  
               run: |
-                   run: |
-                      docker build -t $ECR_REPOSITORY:$IMAGE_TAG .
-                      docker build -t $ECR_REPOSITORY:latest .
-                      docker push $ECR_REPOSITORY:$IMAGE_TAG
-                      docker push $ECR_REPOSITORY:latest   
+                  docker build -t $ecr_repository:$IMAGE_TAG .
+                  docker build -t $ecr_repository:latest .
+                  docker push $ecr_repository:$IMAGE_TAG
+                  docker push $ecr_repository:latest   
 
     
     deploy:
