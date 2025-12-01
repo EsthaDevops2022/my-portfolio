@@ -17,7 +17,6 @@ env:
     ecr_repository: ${{ secrets.ECR_REPOSITORY }}
     cluster: nginx-fargate-cluster
     service: nginx-fargate-service
-    task_definition: ./nginx-fargate-task.json
     IMAGE_TAG: ${{ github.run_number }}
     
 
@@ -72,6 +71,6 @@ jobs:
             with:
               cluster: ${{ env.cluster }}
               service: ${{ env.service }}
-              task-definition: ${{ env.task_definition }}
+              task-definition: ./nginx-fargate-task.json
               wait-for-service-stability: true
               force-new-deployment: true
