@@ -1,0 +1,19 @@
+{
+  "family": "nginx-fargate-task",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "256",
+  "memory": "512",
+  "containerDefinitions": [
+    {
+      "name": "nginx-container",
+      "image": "123456789012.dkr.ecr.us-east-1.amazonaws.com/my-portfolio:latest",
+      "portMappings": [
+        {
+          "containerPort": 80,
+          "hostPort": 80
+        }
+      ]
+    }
+  ]
+}

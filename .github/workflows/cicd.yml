@@ -17,7 +17,7 @@ env:
     ecr_repository: ${{ secrets.ECR_REPOSITORY }}
     cluster: nginx-fargate-cluster
     service: nginx-fargate-service
-    task_definition: nginx-fargate-task.json
+    task_definition: ./nginx-fargate-task.json
     IMAGE_TAG: ${{ github.run_number }}
     
 
