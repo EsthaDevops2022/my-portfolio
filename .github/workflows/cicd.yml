@@ -72,6 +72,6 @@ jobs:
             with:
               cluster: ${{ env.cluster }}
               service: ${{ env.service }}
-              task-definition: ./nginx-fargate-task.json
+              task-definition: ${{ github.workspace }}/nginx-fargate-task.json
               wait-for-service-stability: true
               force-new-deployment: true
