@@ -82,6 +82,9 @@ jobs:
         #    run: |
         #       echo "GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
         #       ls -R $GITHUB_WORKSPACE
+          - name: Update ECS task definition
+            run: |
+              sed -i "s|TAG_PLACEHOLDER|${{ env.IMAGE_TAG }}|g" nginx-fargate-task.json
 
           - name: Deploy to ECS
             uses: aws-actions/amazon-ecs-deploy-task-definition@v2
