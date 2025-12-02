@@ -69,15 +69,15 @@ jobs:
         steps:
           - uses: actions/checkout@v4
 
-          - name: Debug worksapce
-            run: |
-               echo "GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
-               ls -R $GITHUB_WORKSPACE
+        #  - name: Debug worksapce
+        #    run: |
+        #       echo "GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
+        #       ls -R $GITHUB_WORKSPACE
 
           - name: Deploy to ECS
             uses: aws-actions/amazon-ecs-deploy-task-definition@v2
             with:
-              aws-region: ${{ env.aws_region }}
+        #      aws-region: ${{ env.aws_region }}
               cluster: ${{ env.cluster }}
               service: ${{ env.service }}
               task-definition: ${{ github.workspace }}/nginx-fargate-task.json
